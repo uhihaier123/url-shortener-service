@@ -4,6 +4,13 @@ using UrlShortener.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080);
+});
+
+
+
 // Add CORS policy
 builder.Services.AddCors(options =>
 {

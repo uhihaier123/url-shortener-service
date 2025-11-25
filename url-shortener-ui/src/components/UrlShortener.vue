@@ -10,8 +10,8 @@ const error = ref('')
 const urlHistory = ref([])
 const urlStats = ref(null)
 
-// API base URL - CHANGE THIS TO YOUR BACKEND PORT!
-const API_BASE_URL = 'https://localhost:7132'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 // Methods
 const handleSubmit = async () => {
