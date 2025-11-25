@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Use a Linux computer in the cloud
+    
+    steps:
+      # Step 1: Download code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Step 2: Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      # Step 3: Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/url-shortener:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/url-shortener:${{ github.sha }}
+      
+      - name: Run tests
+        run: dotnet test URLShortener.API/URLShortener.API.csproj
