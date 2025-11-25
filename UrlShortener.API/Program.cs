@@ -26,7 +26,18 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (builder.Environment.IsProduction())
+    {
+        // Use SQLite in Render
+        options.UseSqlite("Data Source=urlshortener.db");
+    }
+    else
+    {
+        // Use SQL Server locally
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+});
 // Register the URL service
 builder.Services.AddScoped<IUrlService, UrlService>();
 
@@ -57,4 +68,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Apply migrations automatically on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+
 app.Run();
+
+
