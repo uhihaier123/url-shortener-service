@@ -32,3 +32,7 @@ jobs:
       
       - name: Run tests
         run: echo "Tests passed - will add unit tests later"
+        
+      - name: Deploy to Render
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
